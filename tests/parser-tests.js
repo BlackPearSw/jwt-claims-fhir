@@ -29,6 +29,21 @@ describe('parser', function () {
             lib.parse.should.be.a('function');
         });
 
+        it('should tolerate unknown pattern', function () {
+            var url = 'the/quick/brown/fox';
+            var method = 'GET';
+
+            var result = lib.parse(req(url, method), options);
+
+            should.exist(result);
+            result.should.deep.equal({
+                scope: '*',
+                action: {
+                    base: options.base
+                }
+            });
+        });
+
         it('should parse instance/read', function () {
             var url = 'Foo/123';
             var method = 'GET';
@@ -201,7 +216,7 @@ describe('parser', function () {
             });
         });
 
-        it('should parse type/search using POST', function () {
+        it('should parse type/search using POST with complex params', function () {
             var url = 'Foo/_search?foo=bar1&foo=bar2&bar=foo';
             var method = 'POST';
 
@@ -223,7 +238,7 @@ describe('parser', function () {
         });
 
         it('should parse system/search using POST', function () {
-            var url = '?foo=bar';
+            var url = '_search?foo=bar';
             var method = 'POST';
 
             var result = lib.parse(req(url, method), options);
@@ -234,6 +249,7 @@ describe('parser', function () {
                 action: {
                     base: options.base,
                     op: 'search',
+                    type: '^',
                     parameters: {
                         foo: 'bar'
                     }
@@ -253,6 +269,7 @@ describe('parser', function () {
                 action: {
                     base: options.base,
                     op: 'search',
+                    type: '^',
                     parameters: {
                         foo: 'bar'
                     }
@@ -273,7 +290,8 @@ describe('parser', function () {
                 scope: '*',
                 action: {
                     base: options.base,
-                    op: 'conformance'
+                    op: 'conformance',
+                    type: '^'
                 }
             });
         });
@@ -290,7 +308,8 @@ describe('parser', function () {
                 scope: '*',
                 action: {
                     base: options.base,
-                    op: 'conformance'
+                    op: 'conformance',
+                    type: '^'
                 }
             });
         });
@@ -307,7 +326,8 @@ describe('parser', function () {
                 scope: '*',
                 action: {
                     base: options.base,
-                    op: 'batch_transaction'
+                    op: 'batch_transaction',
+                    type: '^'
                 }
             });
         });
@@ -358,7 +378,8 @@ describe('parser', function () {
                 scope: '*',
                 action: {
                     base: options.base,
-                    op: 'history'
+                    op: 'history',
+                    type: '^'
                 }
             });
         });
@@ -444,7 +465,8 @@ describe('parser', function () {
                 scope: '*',
                 action: {
                     base: options.base,
-                    op: '$bar'
+                    op: '$bar',
+                    type: '^'
                 }
             });
         });
@@ -460,7 +482,8 @@ describe('parser', function () {
                 scope: '*',
                 action: {
                     base: options.base,
-                    op: '$bar'
+                    op: '$bar',
+                    type: '^'
                 }
             });
         });

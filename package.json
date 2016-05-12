@@ -1,6 +1,6 @@
 {
   "name": "jwt-claims-fhir",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Connect middleware for pyrus services",
   "publishConfig": {
     "registry": "https://npm.blackpear.com"

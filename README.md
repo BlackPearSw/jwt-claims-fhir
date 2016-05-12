@@ -1,7 +1,5 @@
 # jwt-claims-fhir
-
-## JWT claims for FHIR proposal
-[jwt claims for fhir](./readme.md)
+This is a trial implementation of the proposal to use [jwt claims for fhir](./jwt-claims-fhir.md)
 
 ## Use
 

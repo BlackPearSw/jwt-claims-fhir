@@ -34,7 +34,7 @@ Determine action from a request with url and method
         method: 'GET'
     };
 
-    var action = lib.parse(req, options);
+    var action = lib.parser.parse(req, options);
 
     console.log(action);
 

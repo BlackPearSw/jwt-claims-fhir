@@ -94,18 +94,28 @@ An array of strings, each defining an action that may be performed on the server
 
 Optional, but if not present assume an empty array:
 
-    fhir.act: []
+    fhir_act: []
 
-##### Interaction
+##### Interaction (instance or type)
 An interaction defined in the FHIR REST API specification:
 
     [interaction]:[type]
 
 For example:
 
-    'read/Foo'
+    'read:Foo'
 
-##### Operation
+##### Interaction (system)
+An interaction defined in the FHIR REST API specification:
+
+    [interaction]:^
+
+For example:
+
+    'read:^'
+
+
+##### Operation (instance or type)
 An operation (standard or implementor-defined)
 
     $[name]:[type]
@@ -113,6 +123,15 @@ An operation (standard or implementor-defined)
 For example:
 
     '$do/Bar'
+
+##### Operation (system)
+An operation (standard or implementor-defined)
+
+    $[name]:^
+
+For example:
+
+    '$do/^'
 
 ##### Shorthand
 

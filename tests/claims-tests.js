@@ -22,7 +22,7 @@ describe('claims', function () {
 
         it('should support method chaining', function () {
             //claims made in javascript web token
-            var scope_claims = ['Foo/12345'];
+            var scope_claims = ['*'];
             var action_claims = ['read:Foo', 'read:Bar'];
 
             //scope and action to evaluate
@@ -225,25 +225,9 @@ describe('claims', function () {
                 expect(fn).to.throw(Error);
             });
 
-            it('should throw an error if action.op undefined', function () {
-                var fn = function () {
-                    lib.authorise.action({});
-                };
-
-                expect(fn).to.throw(Error);
-            });
-
             it('should throw an error if action.op not a string', function () {
                 var fn = function () {
                     lib.authorise.action({op: 1});
-                };
-
-                expect(fn).to.throw(Error);
-            });
-
-            it('should throw an error if action.type undefined', function () {
-                var fn = function () {
-                    lib.authorise.action({op: 'read'});
                 };
 
                 expect(fn).to.throw(Error);

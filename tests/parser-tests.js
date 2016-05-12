@@ -488,6 +488,29 @@ describe('parser', function () {
             });
         });
 
+        it('should parse compartment/search using GET', function () {
+            var url = 'Foo/123/Bar?foo=bar';
+            var method = 'GET';
+
+            var result = lib.parse(req(url, method), options);
+
+            should.exist(result);
+            result.should.deep.equal({
+                scope: {
+                    cmp: 'Foo',
+                    id: '123'
+                },
+                action: {
+                    base: options.base,
+                    op: 'search',
+                    type: 'Bar',
+                    parameters: {
+                        foo: 'bar'
+                    }
+                }
+            });
+        });
+
         it('should throw an error if req undefined', function () {
             var fn = function () {
                 lib.parse();

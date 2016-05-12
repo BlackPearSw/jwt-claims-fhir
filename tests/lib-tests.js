@@ -30,7 +30,7 @@ describe('lib', function () {
             it(description, function () {
                 var params = lib.parser.parse(tc.req, options);
                 lib.claims
-                    .authorise
+                    .authorise()
                     .access(params.scope, tc.token.fhir_scp)
                     .action(params.action, tc.token.fhir_act)
                     .isAuthorised
@@ -64,6 +64,10 @@ describe('lib', function () {
     addTestCase('Foo?foo=bar1&foo=bar2&bar=foo', 'GET', '*', 'search:Foo', true);
     addTestCase('Foo/_search?bar=123', 'POST', '*', 'search:Foo', true);
     addTestCase('Foo/_search?foo=bar1&foo=bar2&bar=foo', 'POST', '*', 'search:Foo', true);
+
+    addTestCase('Foo/123/Bar?foo=bar', 'GET', '*', 'search:Bar', true);
+    addTestCase('Foo/123/Bar?foo=bar', 'GET', 'Foo/123', 'search:Bar', true);
+    addTestCase('Foo/123/Bar?foo=bar', 'GET', 'Foo/456', 'search:Bar', false);
 
     addTestCase('_search?bar=123', 'POST', '*', 'search:^', true);
 

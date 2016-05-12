@@ -1,0 +1,20 @@
+{
+  "name": "jwt-claims-fhir",
+  "version": "0.0.1",
+  "description": "Connect middleware for pyrus services",
+  "publishConfig": {
+    "registry": "https://npm.blackpear.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BlackPearSw/jwt-claims-fhir.git"
+  },
+  "main": "./lib/index.js",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^2.4.5"
+  },
+  "scripts": {
+    "test": "mocha --recursive ./tests"
+  }
+}

@@ -14,7 +14,8 @@ Evaluate claims against a proposed action
     var scope = '*';
     var action = {op: 'read', type: 'Bar'};
 
-    if (lib.claims.authorise
+    if (lib.claims
+        .authorise()
         .access(scope, scope_claims)
         .action(action, action_claims)
         .isAuthorised)

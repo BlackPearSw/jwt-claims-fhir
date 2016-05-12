@@ -6,7 +6,7 @@ This is a trial implementation of the proposal to use [jwt claims for fhir](./jw
 ### claims
 Evaluate claims against a proposed action
 
-    //claims made in javascript web token
+    //claims made in json web token
     var scope_claims = ['Foo/12345'];
     var action_claims = ['read:Foo', 'read:Bar'];
 

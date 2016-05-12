@@ -3,7 +3,7 @@
 JSON Web Token (JWT) is a compact, URL-safe means of representing
 claims to be transferred between two parties. [RFC7519] (https://tools.ietf.org/html/rfc7519)
 
-This proposal describes a generic set of structured claims that can be provided within Javascript
+This proposal describes a generic set of structured claims that can be provided within JSON
 Web Tokens to allow servers to authorise requests to a FHIR REST API.
 
 ## Principles

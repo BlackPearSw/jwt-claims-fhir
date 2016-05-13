@@ -74,7 +74,7 @@ describe('lib', function () {
     addTestCase('', 'GET', '*', 'conformance:^', true);
     addTestCase('metadata', 'GET', '*', 'conformance:^', true);
 
-    addTestCase('', 'POST', '*', 'batch_transaction:^', true);
+    addTestCase('', 'POST', '*', 'transaction:^', true);
 
     addTestCase('Foo/123/_history', 'GET', '*', 'history:Foo', true);
     addTestCase('Foo/_history', 'GET', '*', 'history:Foo', true);

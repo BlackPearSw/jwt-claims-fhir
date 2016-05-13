@@ -315,7 +315,7 @@ describe('parser', function () {
         });
 
 
-        it('should parse system/batch_transaction', function () {
+        it('should parse system/transaction', function () {
             var url = '';
             var method = 'POST';
 
@@ -326,7 +326,7 @@ describe('parser', function () {
                 scope: '*',
                 action: {
                     base: options.base,
-                    op: 'batch_transaction',
+                    op: 'transaction',
                     type: '^'
                 }
             });

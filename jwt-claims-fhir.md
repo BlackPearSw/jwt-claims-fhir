@@ -156,6 +156,9 @@ is equivalent to:
         'read:Foo'
     ]
 
+For compactness, wildcard (*) can be used in place of the interaction/operation and/or the type. For example, to allow anything:
+
+    fhir_act: '*:*'
 
 ### Example
 

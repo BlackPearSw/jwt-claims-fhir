@@ -9,9 +9,8 @@ describe('lib', function () {
         base: 'https://fhir.example.net/svc/fhir'
     };
 
-    var testcase = [];
-    function addTestCase(url, method, fhir_scp, fhir_act, expected) {
-        testcase.push({
+    function authorise(url, method, fhir_scp, fhir_act) {
+        var tc = {
             req: {
                 url: 'https://fhir.example.net/svc/fhir/' + url,
                 method: method
@@ -20,83 +19,82 @@ describe('lib', function () {
                 fhir_scp: fhir_scp,
                 fhir_act: fhir_act
             },
-            expected: expected
-        });
+            returns: function (expected) {
+                try {
+                    var description = tc.req.method + ' ' + tc.req.url + ' -> ' + tc.expected;
+                    it(description, function () {
+                        var params = lib.parser.parse(tc.req, options);
+                        lib.claims
+                            .authorise()
+                            .access(params.scope, tc.token.fhir_scp)
+                            .action(params.action, tc.token.fhir_act)
+                            .isAuthorised
+                            .should.equal(expected);
+                    });
+                }
+                catch (err) {
+                    console.log(err);
+                }
+            }
+        };
+
+        return tc;
     }
-
-    function runTestCase(tc){
-        try {
-            var description = tc.req.method + ' ' + tc.req.url + ' -> ' + tc.expected;
-            it(description, function () {
-                var params = lib.parser.parse(tc.req, options);
-                lib.claims
-                    .authorise()
-                    .access(params.scope, tc.token.fhir_scp)
-                    .action(params.action, tc.token.fhir_act)
-                    .isAuthorised
-                    .should.equal(tc.expected);
-            });
-        }
-        catch (err){
-            console.log(err);
-        }
-    }
-
-    //Wellformed requests
-    addTestCase('Foo/123', 'GET', '*', 'read:Foo', true);
-    addTestCase('Foo/123', 'GET', '*', 'read:*', true);
-    addTestCase('Bar/123', 'GET', '*', 'read:Foo', false);
-    addTestCase('Foo/123', 'GET', '*', '*:Foo', true);
-
-    addTestCase('Foo/123/_history/1', 'GET', '*', 'vread:Foo', true);
-    addTestCase('Foo/123/_history/1', 'GET', '*', 'read:Foo', false);
-
-    addTestCase('Foo/123', 'PUT', '*', 'update:Foo', true);
-    addTestCase('Foo?bar=123', 'PUT', '*', 'update:Foo', true);
-    addTestCase('Bar/123', 'PUT', '*', 'update:Foo', false);
-
-    addTestCase('Foo/123', 'DELETE', '*', 'delete:Foo', true);
-    addTestCase('Foo?bar=123', 'DELETE', '*', 'delete:Foo', true);
-
-    addTestCase('Foo', 'POST', '*', 'create:Foo', true);
-
-    addTestCase('Foo?bar=123', 'GET', '*', 'search:Foo', true);
-    addTestCase('Foo?foo=bar1&foo=bar2&bar=foo', 'GET', '*', 'search:Foo', true);
-    addTestCase('Foo/_search?bar=123', 'POST', '*', 'search:Foo', true);
-    addTestCase('Foo/_search?foo=bar1&foo=bar2&bar=foo', 'POST', '*', 'search:Foo', true);
-
-    addTestCase('Foo/123/Bar?foo=bar', 'GET', '*', 'search:Bar', true);
-    addTestCase('Foo/123/Bar?foo=bar', 'GET', 'Foo/123', 'search:Bar', true);
-    addTestCase('Foo/123/Bar?foo=bar', 'GET', 'Foo/456', 'search:Bar', false);
-
-    addTestCase('_search?bar=123', 'POST', '*', 'search:^', true);
-
-    addTestCase('', 'GET', '*', 'conformance:^', true);
-    addTestCase('metadata', 'GET', '*', 'conformance:^', true);
-
-    addTestCase('', 'POST', '*', 'transaction:^', true);
-
-    addTestCase('Foo/123/_history', 'GET', '*', 'history:Foo', true);
-    addTestCase('Foo/_history', 'GET', '*', 'history:Foo', true);
-    addTestCase('_history', 'GET', '*', 'history:^', true);
-
-    addTestCase('Foo/123/$bar', 'POST', '*', '$bar:Foo', true);
-    addTestCase('Foo/123/$bar', 'GET', '*', '$bar:Foo', true);
-
-    addTestCase('Foo/$bar', 'POST', '*', '$bar:Foo', true);
-    addTestCase('Foo/$bar', 'GET', '*', '$bar:Foo', true);
-
-    addTestCase('$bar', 'POST', '*', '$bar:^', true);
-    addTestCase('$bar', 'GET', '*', '$bar:^', true);
-
-    //Badly formed requests
-    addTestCase('dfjlkjasdflkjlkjljadsfkj', 'POST', '*', 'create:Foo', false);
-    addTestCase('Foo/123', 'POST', '*', 'create:Foo', false);
-    addTestCase('Foo/123', 'GET', '*', 'read:', false);
-    addTestCase('Foo/123', 'GET', '*', '', false);
 
     describe('should combine request parsing and claim evaluation', function () {
-        testcase.forEach(runTestCase);
+        //Wellformed requests
+        authorise('Foo/123', 'GET', '*', 'read:Foo').returns(true);
+        authorise('Foo/123', 'GET', '*', 'read:*').returns(true);
+        authorise('Bar/123', 'GET', '*', 'read:Foo').returns(false);
+        authorise('Foo/123', 'GET', '*', '*:Foo').returns(true);
+
+        authorise('Foo/123/_history/1', 'GET', '*', 'vread:Foo').returns(true);
+        authorise('Foo/123/_history/1', 'GET', '*', 'read:Foo').returns(false);
+
+        authorise('Foo/123', 'PUT', '*', 'update:Foo').returns(true);
+        authorise('Foo?bar=123', 'PUT', '*', 'update:Foo').returns(true);
+        authorise('Bar/123', 'PUT', '*', 'update:Foo').returns(false);
+
+        authorise('Foo/123', 'DELETE', '*', 'delete:Foo').returns(true);
+        authorise('Foo?bar=123', 'DELETE', '*', 'delete:Foo').returns(true);
+
+
+        authorise('Foo', 'POST', '*', 'create:Foo').returns(true);
+
+        authorise('Foo?bar=123', 'GET', '*', 'search:Foo').returns(true);
+        authorise('Foo?foo=bar1&foo=bar2&bar=foo', 'GET', '*', 'search:Foo').returns(true);
+        authorise('Foo/_search?bar=123', 'POST', '*', 'search:Foo').returns(true);
+        authorise('Foo/_search?foo=bar1&foo=bar2&bar=foo', 'POST', '*', 'search:Foo').returns(true);
+
+        authorise('Foo/123/Bar?foo=bar', 'GET', '*', 'search:Bar').returns(true);
+        authorise('Foo/123/Bar?foo=bar', 'GET', 'Foo/123', 'search:Bar').returns(true);
+        authorise('Foo/123/Bar?foo=bar', 'GET', 'Foo/456', 'search:Bar').returns(false);
+
+        authorise('_search?bar=123', 'POST', '*', 'search:^').returns(true);
+
+        authorise('', 'GET', '*', 'conformance:^').returns(true);
+        authorise('metadata', 'GET', '*', 'conformance:^').returns(true);
+
+        authorise('', 'POST', '*', 'transaction:^').returns(true);
+
+        authorise('Foo/123/_history', 'GET', '*', 'history:Foo').returns(true);
+        authorise('Foo/_history', 'GET', '*', 'history:Foo').returns(true);
+        authorise('_history', 'GET', '*', 'history:^').returns(true);
+
+        authorise('Foo/123/$bar', 'POST', '*', '$bar:Foo').returns(true);
+        authorise('Foo/123/$bar', 'GET', '*', '$bar:Foo').returns(true);
+
+        authorise('Foo/$bar', 'POST', '*', '$bar:Foo').returns(true);
+        authorise('Foo/$bar', 'GET', '*', '$bar:Foo').returns(true);
+
+        authorise('$bar', 'POST', '*', '$bar:^').returns(true);
+        authorise('$bar', 'GET', '*', '$bar:^').returns(true);
+
+        //Badly formed requests
+        authorise('dfjlkjasdflkjlkjljadsfkj', 'POST', '*', 'create:Foo').returns(false);
+        authorise('Foo/123', 'POST', '*', 'create:Foo').returns(false);
+        authorise('Foo/123', 'GET', '*', 'read:').returns(false);
+        authorise('Foo/123', 'GET', '*', '').returns(false);
     });
 });
 

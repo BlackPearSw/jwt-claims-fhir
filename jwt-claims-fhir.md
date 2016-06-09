@@ -148,14 +148,17 @@ is equivalent to:
 
 For compactness, a single string can be supplied in place of the array. For example:
 
-    fhir.act: 'read:Foo'
+    fhir_act: 'read:Foo'
 
 is equivalent to:
 
-    fhir.act: [
+    fhir_act: [
         'read:Foo'
     ]
 
+For compactness, wildcard (*) can be used in place of the interaction/operation and/or the type. For example, to allow anything:
+
+    fhir_act: '*:*'
 
 ### Example
 

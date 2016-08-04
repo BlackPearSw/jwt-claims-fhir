@@ -1,47 +1,58 @@
 var lib = require('../lib');
 
 var should = require('chai').should();
-var expect = require('chai').expect;
 
 describe('lib', function () {
 
-    var options = {
-        base: 'https://fhir.example.net/svc/fhir'
-    };
 
-    function authorise(url, method, fhir_scp, fhir_act) {
-        var tc = {
-            req: {
-                url: 'https://fhir.example.net/svc/fhir/' + url,
-                method: method
-            },
-            token: {
-                fhir_scp: fhir_scp,
-                fhir_act: fhir_act
-            },
-            returns: function (expected) {
-                try {
-                    var description = tc.req.method + ' ' + tc.req.url + ' -> ' + tc.expected;
-                    it(description, function () {
-                        var params = lib.parser.parse(tc.req, options);
-                        lib.claims
-                            .authorise()
-                            .access(params.scope, tc.token.fhir_scp)
-                            .action(params.action, tc.token.fhir_act)
-                            .isAuthorised
-                            .should.equal(expected);
-                    });
+    function buildAuthorisation(reqHeaders, options) {
+
+        return function(url, method, fhir_scp, fhir_act) {
+            var tc = {
+                req: {
+                    method: method,
+                    protocol: 'https',
+                    originalUrl: '/fhir/' + url,
+                    headers: reqHeaders
+                },
+                token: {
+                    fhir_scp: fhir_scp,
+                    fhir_act: fhir_act
+                },
+                returns: function (expected) {
+                    try {
+                        var description = tc.req.method + ' ' + tc.req.originalUrl + ' -> ' + expected;
+                        it(description, function () {
+                            var params = lib.parser.parse(tc.req, options);
+                            lib.claims
+                                .authorise()
+                                .access(params.scope, tc.token.fhir_scp)
+                                .action(params.action, tc.token.fhir_act)
+                                .isAuthorised
+                                .should.equal(expected);
+                        });
+                    }
+                    catch (err) {
+                        console.log(err);
+                    }
                 }
-                catch (err) {
-                    console.log(err);
-                }
-            }
+            };
+
+            return tc;
+        }
+    }
+    
+    describe('should combine request parsing and claim evaluation', function () {
+
+        var header = {
+            host: 'fhir.example.net/svc'
+        };
+        var options = {
+            base: 'https://fhir.example.net/svc/fhir'
         };
 
-        return tc;
-    }
+        var authorise = buildAuthorisation(header, options);
 
-    describe('should combine request parsing and claim evaluation', function () {
         //Wellformed requests
         authorise('Foo/123', 'GET', '*', 'read:Foo').returns(true);
         authorise('Foo/123', 'GET', '*', 'read:*').returns(true);
@@ -95,6 +106,40 @@ describe('lib', function () {
         authorise('Foo/123', 'POST', '*', 'create:Foo').returns(false);
         authorise('Foo/123', 'GET', '*', 'read:').returns(false);
         authorise('Foo/123', 'GET', '*', '').returns(false);
+    });
+
+    describe('should reject request if options are malformed', function () {
+
+        var header = {
+            host: 'fhir.example.net/svc'
+        };
+        var options = {
+            // Base url has additional route path
+            base: 'https://fhir.example.net/svc/testing/fhir'
+        };
+
+        var authorise = buildAuthorisation(header, options);
+
+        authorise('Foo?identifier=bar%7C1234', 'GET', '*', '*:*').returns(false);
+    });
+
+    describe('should support proxied request', function () {
+
+        url = 'Foo?identifier=bar%7C1234';
+
+        var header = {
+            host: 'fhir.demo.net/svc',
+            'x-forwarded-proto': 'http',
+            'x-forwarded-uri': '/fhir/' + url
+        };
+        
+        var options = {
+            base: 'http://fhir.demo.net/svc/fhir'
+        };
+
+        var authorise = buildAuthorisation(header, options);
+
+        authorise(url, 'GET', '*', ['read:*','search:*']).returns(true);
     });
 });
 

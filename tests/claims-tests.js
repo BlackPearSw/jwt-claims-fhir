@@ -218,14 +218,14 @@ describe('claims', function () {
                 lib.authorise().action.should.be.a('function');
             });
 
-            it('should throw an error if action undefined', function () {
+            it('should throw an error if action not present', function () {
                 var fn = function () {
                     lib.authorise().action();
                 };
 
                 expect(fn).to.throw(Error);
             });
-
+            
             it('should throw an error if action.op not a string', function () {
                 var fn = function () {
                     lib.authorise().action({op: 1});
@@ -258,6 +258,20 @@ describe('claims', function () {
 
             it('should handle no claims', function () {
                 var result = lib.authorise().action(action);
+
+                should.exist(result);
+                result.isAuthorised.should.equal(false);
+            });
+
+            it('should not authorise a wildcard claim if the action does not contain an op', function () {
+                var result = lib.authorise().action({base: 'https://foobar', type: 'Foo'}, ['*:*']);
+
+                should.exist(result);
+                result.isAuthorised.should.equal(false);
+            });
+
+            it('should not authorise a wildcard claim if the action does not contain a type', function () {
+                var result = lib.authorise().action({base: 'https://foobar', op: 'read'}, ['*:*']);
 
                 should.exist(result);
                 result.isAuthorised.should.equal(false);

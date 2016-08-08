@@ -9,14 +9,16 @@ describe('parser', function () {
 
     beforeEach(function () {
         options = {
-            base: 'https://fubar/foo/fhir'
+            base: 'https://fubar.com/foo/fhir'
         }
     });
 
     function req(url, method) {
         return {
             method: method,
-            url: 'https://fubar/foo/fhir/' + url
+            protocol: 'https',
+            originalUrl: '/fhir/' + url,
+            headers: {host : 'fubar.com/foo'}
         }
     }
 

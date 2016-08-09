@@ -17,8 +17,8 @@ describe('parser', function () {
         return {
             method: method,
             protocol: 'https',
-            originalUrl: '/fhir/' + url,
-            headers: {host : 'fubar.com/foo'}
+            originalUrl: '/foo/fhir/' + url,
+            headers: {host : 'fubar.com'}
         }
     }
 
@@ -298,6 +298,27 @@ describe('parser', function () {
             });
         });
 
+        it('should parse system/conformance specified without trailing slash', function () {
+            var thisReq =  {
+                    method: 'GET',
+                    protocol: 'https',
+                    originalUrl: '/foo/fhir',
+                    headers: {host : 'fubar.com'}
+                };
+
+            var result = lib.parse(thisReq, options);
+
+            should.exist(result);
+            result.should.deep.equal({
+                scope: '*',
+                action: {
+                    base: options.base,
+                    op: 'conformance',
+                    type: '^'
+                }
+            });
+        });
+
 
         it('should parse system/conformance', function () {
             var url = 'metadata';
@@ -521,7 +542,7 @@ describe('parser', function () {
             expect(fn).to.throw(Error);
         });
 
-        it('should throw an error if req.url undefined', function () {
+        it('should throw an error if req.originalUrl undefined', function () {
             var req = {};
 
             var fn = function () {
@@ -531,9 +552,9 @@ describe('parser', function () {
             expect(fn).to.throw(Error);
         });
 
-        it('should throw an error if req.url is not a string', function () {
+        it('should throw an error if req.originalUrl is not a string', function () {
             var req = {
-                url: 123
+                originalUrl: 123
             };
 
             var fn = function () {
@@ -545,7 +566,7 @@ describe('parser', function () {
 
         it('should throw an error if req.method undefined', function () {
             var req = {
-                url: '123'
+                originalUrl: '123'
             };
 
             var fn = function () {
@@ -557,7 +578,7 @@ describe('parser', function () {
 
         it('should throw an error if req.method is not a string', function () {
             var req = {
-                url: '123',
+                originalUrl: '123',
                 method: 123
             };
 
@@ -570,7 +591,7 @@ describe('parser', function () {
 
         it('should throw an error if options undefined', function () {
             var req = {
-                url: '123',
+                originalUrl: '123',
                 method: 'GET'
             };
 
@@ -583,7 +604,7 @@ describe('parser', function () {
 
         it('should throw an error if options.base undefined', function () {
             var req = {
-                url: '123',
+                originalUrl: '123',
                 method: 'GET'
             };
 
@@ -598,7 +619,7 @@ describe('parser', function () {
 
         it('should throw an error if options.base is not a string', function () {
             var req = {
-                url: '123',
+                originalUrl: '123',
                 method: 'GET'
             };
 
@@ -611,6 +632,84 @@ describe('parser', function () {
             };
 
             expect(fn).to.throw(Error);
+        });
+
+        it('should throw an error if protocol is not specified', function () {
+            var req =  {
+                method: 'GET',
+                originalUrl: '/foo/fhir/',
+                headers: {host : 'fubar.com'}
+            };
+
+            try {
+                lib.parse(req, options);
+                throw new Error('error not thrown');
+            }
+            catch(err) {
+                expect(err).to.exist;
+                expect(err.message).to.equal('request protocol not defined');
+            }
+        });
+
+        it('should throw an error if protocol specified is not valid', function () {
+            var req =  {
+                method: 'GET',
+                protocol: 'ftp',
+                originalUrl: '/foo/fhir/',
+                headers: {host : 'fubar.com'}
+            };
+
+            try {
+                lib.parse(req, options);
+                throw new Error('error not thrown');
+            }
+            catch(err) {
+                expect(err).to.exist;
+                expect(err.message).to.equal('request protocol not valid');
+            }
+        });
+
+        it('should support proxied request headers', function () {
+            var req =  {
+                method: 'GET',
+                protocol: 'http',
+                originalUrl: '/some/other/path',
+                headers: {host : 'fubar.com',
+                    'x-forwarded-proto': 'https',
+                    'x-forwarded-uri': '/foo/fhir/'}
+            };
+
+            var result = lib.parse(req, options);
+
+            should.exist(result);
+            result.should.deep.equal({
+                scope: '*',
+                action: {
+                    base: options.base,
+                    op: 'conformance',
+                    type: '^'
+                }
+            });
+        });
+
+        it('should reject spoofed headers', function() {
+            var req =  {
+                method: 'GET',
+                protocol: 'http',
+                originalUrl: '/some/other/path',
+                headers: {host : 'fubar.com',
+                    'x-forwarded-proto': 'https',
+                    'x-forwarded-uri': 'Bar?a=11&x' + '/Foo/678'}
+            };
+
+            try {
+                lib.parse(req, options);
+                throw new Error('error not thrown');
+            }
+            catch(err) {
+                expect(err).to.exist;
+                expect(err.message).to.equal('request source does not match options');
+            }
         });
     });
 });

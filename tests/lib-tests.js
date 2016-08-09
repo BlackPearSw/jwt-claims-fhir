@@ -20,9 +20,9 @@ describe('lib', function () {
                     fhir_act: fhir_act
                 },
                 returns: function (expected) {
-                    try {
-                        var description = tc.req.method + ' ' + tc.req.originalUrl + ' -> ' + expected;
-                        it(description, function () {
+                    var description = tc.req.method + ' ' + tc.req.originalUrl + ' -> ' + expected;
+                    it(description, function () {
+                        try {
                             var params = lib.parser.parse(tc.req, options);
                             lib.claims
                                 .authorise()
@@ -30,11 +30,12 @@ describe('lib', function () {
                                 .action(params.action, tc.token.fhir_act)
                                 .isAuthorised
                                 .should.equal(expected);
-                        });
-                    }
-                    catch (err) {
-                        console.log(err);
-                    }
+                        }
+                        catch (err) {
+                            err.should.exist;
+                            err.message.should.equal(expected);
+                        }
+                    });
                 }
             };
 
@@ -79,7 +80,7 @@ describe('lib', function () {
 
         authorise('Foo/123/Bar?foo=bar', 'GET', '*', 'search:Bar').returns(true);
         authorise('Foo/123/Bar?foo=bar', 'GET', 'Foo/123', 'search:Bar').returns(true);
-        authorise('Foo/123/Bar?foo=bar', 'GET', 'Foo/456', 'search:Bar').returns(false);
+        authorise('Foo/678/Bar?foo=bar', 'GET', 'Foo/456', 'search:Bar').returns(false);
 
         authorise('_search?bar=123', 'POST', '*', 'search:^').returns(true);
 
@@ -120,7 +121,7 @@ describe('lib', function () {
 
         var authorise = buildAuthorisation(header, options);
 
-        authorise('Foo?identifier=bar%7C1234', 'GET', '*', '*:*').returns(false);
+        authorise('Foo?identifier=bar%7C1234', 'GET', '*', '*:*').returns('request source does not match options');
     });
 
     describe('should support proxied request', function () {
@@ -128,9 +129,9 @@ describe('lib', function () {
         url = 'Foo?identifier=bar%7C1234';
 
         var header = {
-            host: 'fhir.demo.net/svc',
+            host: 'fhir.demo.net',
             'x-forwarded-proto': 'http',
-            'x-forwarded-uri': '/fhir/' + url
+            'x-forwarded-uri': '/svc/fhir/' + url
         };
         
         var options = {
@@ -140,6 +141,26 @@ describe('lib', function () {
         var authorise = buildAuthorisation(header, options);
 
         authorise(url, 'GET', '*', ['read:*','search:*']).returns(true);
+    });
+
+    describe('requests using spoofed headers are rejected', function () {
+
+        // This test assumes a GET request to http://fhir.demo.net/svc/fhir/Bar?a=11&/Foo/678?a=1
+        // It is attempting to gain authorisation to search the Bar resource by spoofing the path and
+        // with the knowledge that the /Foo/678?a=1 search term will be ignored
+        var header = {
+            host: 'fhir.demo.net',
+            'x-forwarded-proto': 'http',
+            'x-forwarded-uri': 'Bar?a=11&' + '/Foo/678'
+        };
+
+        var options = {
+            base: 'http://fhir.demo.net/svc/fhir'
+        };
+
+        var authorise = buildAuthorisation(header, options);
+
+        authorise(url, 'GET', 'Foo/678', ['read:*','search:*']).returns('request source does not match options');
     });
 });
 

@@ -70,7 +70,6 @@ describe('lib', function () {
         authorise('Foo/123', 'DELETE', '*', 'delete:Foo').returns(true);
         authorise('Foo?bar=123', 'DELETE', '*', 'delete:Foo').returns(true);
 
-
         authorise('Foo', 'POST', '*', 'create:Foo').returns(true);
 
         authorise('Foo?bar=123', 'GET', '*', 'search:Foo').returns(true);
@@ -102,11 +101,18 @@ describe('lib', function () {
         authorise('$bar', 'POST', '*', '$bar:^').returns(true);
         authorise('$bar', 'GET', '*', '$bar:^').returns(true);
 
+
         //Badly formed requests
         authorise('dfjlkjasdflkjlkjljadsfkj', 'POST', '*', 'create:Foo').returns(false);
         authorise('Foo/123', 'POST', '*', 'create:Foo').returns(false);
         authorise('Foo/123', 'GET', '*', 'read:').returns(false);
         authorise('Foo/123', 'GET', '*', '').returns(false);
+
+        // basic tag operations for DSTU1 backwards compatibility
+        authorise('Foo/123456/_tags', 'POST', '*', '*:*').returns(true);
+        authorise('Foo/123456/_tags', 'POST', '*', '_tags:Foo').returns(true);
+        authorise('Foo/123456/_tags/_delete', 'POST', '*', '*:*').returns(true);
+        authorise('Foo/123456/_tags/_delete', 'POST', '*', '_tags/_delete:Foo').returns(true);
     });
 
     describe('should reject request if options are malformed', function () {

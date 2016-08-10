@@ -711,5 +711,41 @@ describe('parser', function () {
                 expect(err.message).to.equal('request source does not match options');
             }
         });
+
+        it('should parse instance/_tags using POST', function () {
+            var url = 'Foo/123/_tags';
+            var method = 'POST';
+
+            var result = lib.parse(req(url, method), options);
+
+            should.exist(result);
+            result.should.deep.equal({
+                scope: '*',
+                action: {
+                    base: options.base,
+                    op: '_tags',
+                    type: 'Foo',
+                    id: '123'
+                }
+            });
+        });
+
+        it('should parse instance/_tags/_delete using POST', function () {
+            var url = 'Foo/123/_tags/_delete';
+            var method = 'POST';
+
+            var result = lib.parse(req(url, method), options);
+
+            should.exist(result);
+            result.should.deep.equal({
+                scope: '*',
+                action: {
+                    base: options.base,
+                    op: '_tags/_delete',
+                    type: 'Foo',
+                    id: '123'
+                }
+            });
+        });
     });
 });

@@ -81,12 +81,23 @@ describe('lib', function () {
         authorise('Foo/123/Bar?foo=bar', 'GET', 'Foo/123', 'search:Bar').returns(true);
         authorise('Foo/678/Bar?foo=bar', 'GET', 'Foo/456', 'search:Bar').returns(false);
 
+        authorise('Foo/123/Bar/9999', 'GET', '*', '*:*').returns(true);
+        authorise('Foo/123/Bar/9999', 'GET', 'Foo/123', 'read:Bar').returns(true);
+        authorise('Foo/678/Bar/9999', 'GET', 'Foo/456', 'read:Bar').returns(false);
+        authorise('Foo/123/Bar/9999', 'GET', 'Foo/123', 'read:Foo').returns(false);
+
+        authorise('Foo/123', 'POST', '*', '*:*').returns(true);
+        authorise('Foo/123', 'POST', 'Foo/123', 'transaction:^').returns(true);
+        authorise('Foo/678', 'POST', 'Foo/456', 'transaction:^').returns(false);
+        authorise('Foo/123', 'POST', 'Foo/123', 'transaction:Foo').returns(false);
+
         authorise('_search?bar=123', 'POST', '*', 'search:^').returns(true);
 
         authorise('', 'GET', '*', 'conformance:^').returns(true);
         authorise('metadata', 'GET', '*', 'conformance:^').returns(true);
 
         authorise('', 'POST', '*', 'transaction:^').returns(true);
+
 
         authorise('Foo/123/_history', 'GET', '*', 'history:Foo').returns(true);
         authorise('Foo/_history', 'GET', '*', 'history:Foo').returns(true);

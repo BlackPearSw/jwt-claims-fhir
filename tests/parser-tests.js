@@ -32,14 +32,17 @@ describe('parser', function () {
         });
 
         it('should tolerate unknown pattern', function () {
-            var url = 'the/quick/brown/fox';
+            var url = 'the/quick/brown/fox/jumped/over/the/lazy/dog';
             var method = 'GET';
 
             var result = lib.parse(req(url, method), options);
 
             should.exist(result);
             result.should.deep.equal({
-                scope: '*',
+                scope: {
+                    cmp: 'the',
+                    id: 'quick'
+                },
                 action: {
                     base: options.base
                 }
@@ -54,7 +57,10 @@ describe('parser', function () {
 
             should.exist(result);
             result.should.deep.equal({
-                scope: '*',
+                scope: {
+                    cmp: 'Foo',
+                    id: '123'
+                },
                 action: {
                     base: options.base,
                     op: 'read',
@@ -72,7 +78,10 @@ describe('parser', function () {
 
             should.exist(result);
             result.should.deep.equal({
-                scope: '*',
+                scope: {
+                    cmp: 'Foo',
+                    id: '123'
+                },
                 action: {
                     base: options.base,
                     op: 'vread',
@@ -91,7 +100,10 @@ describe('parser', function () {
 
             should.exist(result);
             result.should.deep.equal({
-                scope: '*',
+                scope: {
+                    cmp: 'Foo',
+                    id: '123'
+                },
                 action: {
                     base: options.base,
                     op: 'update',
@@ -129,7 +141,10 @@ describe('parser', function () {
 
             should.exist(result);
             result.should.deep.equal({
-                scope: '*',
+                scope: {
+                    cmp: 'Foo',
+                    id: '123'
+                },
                 action: {
                     base: options.base,
                     op: 'delete',
@@ -279,8 +294,6 @@ describe('parser', function () {
             });
         });
 
-        //TODO: Compartment search
-
         it('should parse system/conformance', function () {
             var url = '';
             var method = 'GET';
@@ -363,7 +376,10 @@ describe('parser', function () {
 
             should.exist(result);
             result.should.deep.equal({
-                scope: '*',
+                scope: {
+                    cmp: 'Foo',
+                    id: '123'
+                },
                 action: {
                     base: options.base,
                     op: 'history',
@@ -415,7 +431,10 @@ describe('parser', function () {
 
             should.exist(result);
             result.should.deep.equal({
-                scope: '*',
+                scope: {
+                    cmp: 'Foo',
+                    id: '123'
+                },
                 action: {
                     base: options.base,
                     op: '$bar',
@@ -433,7 +452,10 @@ describe('parser', function () {
 
             should.exist(result);
             result.should.deep.equal({
-                scope: '*',
+                scope: {
+                    cmp: 'Foo',
+                    id: '123'
+                },
                 action: {
                     base: options.base,
                     op: '$bar',
@@ -530,6 +552,89 @@ describe('parser', function () {
                     parameters: {
                         foo: 'bar'
                     }
+                }
+            });
+        });
+
+        it('should parse compartment/read using GET', function () {
+            var url = 'Foo/123/Bar/456';
+            var method = 'GET';
+
+            var result = lib.parse(req(url, method), options);
+
+            should.exist(result);
+            result.should.deep.equal({
+                scope: {
+                    cmp: 'Foo',
+                    id: '123'
+                },
+                action: {
+                    base: options.base,
+                    op: 'read',
+                    type: 'Bar',
+                    id: '456'
+                }
+            });
+        });
+
+        it('should parse compartment/transaction', function () {
+            var url = 'Foo/123';
+            var method = 'POST';
+
+            var result = lib.parse(req(url, method), options);
+
+            should.exist(result);
+            result.should.deep.equal({
+                scope: {
+                    cmp: 'Foo',
+                    id: '123'
+                },
+                action: {
+                    base: options.base,
+                    op: 'transaction',
+                    type: '^'
+                }
+            });
+        });
+
+        it('should parse instance/_tags using POST', function () {
+            var url = 'Foo/123/_tags';
+            var method = 'POST';
+
+            var result = lib.parse(req(url, method), options);
+
+            should.exist(result);
+            result.should.deep.equal({
+                scope: {
+                    cmp: 'Foo',
+                    id: '123'
+                },
+                action: {
+                    base: options.base,
+                    op: '_tags',
+                    type: 'Foo',
+                    id: '123'
+                }
+            });
+        });
+
+        it('should parse instance/_tags/_delete using POST', function () {
+            var url = 'Foo/123/_tags/_delete';
+            var method = 'POST';
+
+            var result = lib.parse(req(url, method), options);
+
+            should.exist(result);
+            result.should.deep.equal({
+                scope: {
+                    cmp: 'Foo',
+                    id: '123'
+                },
+                action: {
+                    base: options.base,
+                    op: '_tags/_delete',
+                    type: 'Foo',
+                    id: '123'
                 }
             });
         });
@@ -710,42 +815,6 @@ describe('parser', function () {
                 expect(err).to.exist;
                 expect(err.message).to.equal('request source does not match options');
             }
-        });
-
-        it('should parse instance/_tags using POST', function () {
-            var url = 'Foo/123/_tags';
-            var method = 'POST';
-
-            var result = lib.parse(req(url, method), options);
-
-            should.exist(result);
-            result.should.deep.equal({
-                scope: '*',
-                action: {
-                    base: options.base,
-                    op: '_tags',
-                    type: 'Foo',
-                    id: '123'
-                }
-            });
-        });
-
-        it('should parse instance/_tags/_delete using POST', function () {
-            var url = 'Foo/123/_tags/_delete';
-            var method = 'POST';
-
-            var result = lib.parse(req(url, method), options);
-
-            should.exist(result);
-            result.should.deep.equal({
-                scope: '*',
-                action: {
-                    base: options.base,
-                    op: '_tags/_delete',
-                    type: 'Foo',
-                    id: '123'
-                }
-            });
         });
     });
 });

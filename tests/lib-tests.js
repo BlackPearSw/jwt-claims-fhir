@@ -12,7 +12,7 @@ describe('lib', function () {
                 req: {
                     method: method,
                     protocol: 'https',
-                    originalUrl: '/fhir/' + url,
+                    url: '/fhir/' + url,
                     headers: reqHeaders
                 },
                 token: {
@@ -20,7 +20,7 @@ describe('lib', function () {
                     fhir_act: fhir_act
                 },
                 returns: function (expected) {
-                    var description = tc.req.method + ' ' + tc.req.originalUrl + ' -> ' + expected;
+                    var description = tc.req.method + ' ' + tc.req.url + ' -> ' + expected;
                     it(description, function () {
                         try {
                             var params = lib.parser.parse(tc.req, options);

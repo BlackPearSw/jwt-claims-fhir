@@ -17,7 +17,7 @@ describe('parser', function () {
         return {
             method: method,
             protocol: 'https',
-            originalUrl: '/foo/fhir/' + url,
+            url: '/foo/fhir/' + url,
             headers: {host : 'fubar.com'}
         }
     }
@@ -315,7 +315,7 @@ describe('parser', function () {
             var thisReq =  {
                     method: 'GET',
                     protocol: 'https',
-                    originalUrl: '/foo/fhir',
+                    url: '/foo/fhir',
                     headers: {host : 'fubar.com'}
                 };
 
@@ -742,7 +742,7 @@ describe('parser', function () {
         it('should throw an error if protocol is not specified', function () {
             var req =  {
                 method: 'GET',
-                originalUrl: '/foo/fhir/',
+                url: '/foo/fhir/',
                 headers: {host : 'fubar.com'}
             };
 
@@ -760,7 +760,7 @@ describe('parser', function () {
             var req =  {
                 method: 'GET',
                 protocol: 'ftp',
-                originalUrl: '/foo/fhir/',
+                url: '/foo/fhir/',
                 headers: {host : 'fubar.com'}
             };
 
@@ -778,7 +778,7 @@ describe('parser', function () {
             var req =  {
                 method: 'GET',
                 protocol: 'http',
-                originalUrl: '/some/other/path',
+                url: '/some/other/path',
                 headers: {host : 'fubar.com',
                     'x-forwarded-proto': 'https',
                     'x-forwarded-uri': '/foo/fhir/'}
@@ -801,7 +801,7 @@ describe('parser', function () {
             var req =  {
                 method: 'GET',
                 protocol: 'http',
-                originalUrl: '/some/other/path',
+                url: '/some/other/path',
                 headers: {host : 'fubar.com',
                     'x-forwarded-proto': 'https',
                     'x-forwarded-uri': 'Bar?a=11&x' + '/Foo/678'}

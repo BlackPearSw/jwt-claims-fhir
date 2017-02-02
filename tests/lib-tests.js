@@ -146,9 +146,9 @@ describe('lib', function () {
         url = 'Foo?identifier=bar%7C1234';
 
         var header = {
-            host: 'fhir.demo.net',
+            host: 'fhir.demo.net/svc',
             'x-forwarded-proto': 'http',
-            'x-forwarded-uri': '/svc/fhir/' + url
+            'url': url
         };
         
         var options = {

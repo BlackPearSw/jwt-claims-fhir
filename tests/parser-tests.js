@@ -332,8 +332,7 @@ describe('parser', function () {
             });
         });
 
-
-        it('should parse system/conformance', function () {
+        it('should parse system/conformance using /metadata route', function () {
             var url = 'metadata';
             var method = 'GET';
 
@@ -349,7 +348,6 @@ describe('parser', function () {
                 }
             });
         });
-
 
         it('should parse system/transaction', function () {
             var url = '';
@@ -597,6 +595,88 @@ describe('parser', function () {
             });
         });
 
+        it('should parse GET operation with base URL expressed as regex', function () {
+            var url = 'foo';
+
+            var reqForOrg = function(org) {
+
+                var urlWithOrg = '/vault/v1/' + org + '/fhir/Foo/123';
+
+                return {
+                    method: 'GET',
+                    protocol: 'https',
+                    originalUrl: urlWithOrg,
+                    headers: {host: 'fubar.com'}
+                };
+            };
+
+            options.base = {
+                regexString: '^https://fubar.com/vault/v1/\\w\\d{5}/fhir'
+            };
+
+            var result_Z99999 = lib.parse(reqForOrg('Z99999'), options);
+            var result_A12345 = lib.parse(reqForOrg('A12345'), options);
+
+            should.exist(result_Z99999);
+            result_Z99999.should.deep.equal({
+                scope: {
+                    cmp: 'Foo',
+                    id: '123'
+                },
+                action: {
+                    base: 'https://fubar.com/vault/v1/Z99999/fhir',
+                    op: 'read',
+                    type: 'Foo',
+                    id: '123'
+                }
+            });
+
+            should.exist(result_A12345);
+            result_A12345.should.deep.equal({
+                scope: {
+                    cmp: 'Foo',
+                    id: '123'
+                },
+                action: {
+                    base: 'https://fubar.com/vault/v1/A12345/fhir',
+                    op: 'read',
+                    type: 'Foo',
+                    id: '123'
+                }
+            });
+        });
+
+        it('should parse system conformance with base URL expressed as regex', function () {
+            var url = 'foo';
+
+            var reqForOrg = function(org) {
+
+                var urlWithOrg = '/vault/v1/' + org + '/fhir/';
+
+                return {
+                    method: 'GET',
+                    protocol: 'https',
+                    originalUrl: urlWithOrg,
+                    headers: {host: 'fubar.com'}
+                };
+            };
+
+            options.base = {
+                regexString: '^https://fubar.com/vault/v1/\\w\\d{5}/fhir'
+            };
+
+            var result = lib.parse(reqForOrg('Z99999'), options);
+            should.exist(result);
+            result.should.deep.equal({
+                scope: '*',
+                action: {
+                    base: 'https://fubar.com/vault/v1/Z99999/fhir',
+                    op: 'conformance',
+                    type: '^'
+                }
+            });
+        });
+
         it('should parse instance/_tags using POST', function () {
             var url = 'Foo/123/_tags';
             var method = 'POST';
@@ -739,6 +819,25 @@ describe('parser', function () {
             expect(fn).to.throw(Error);
         });
 
+        it('should throw an error if options.base.regexString defined but is not a string', function () {
+            var req = {
+                originalUrl: '123',
+                method: 'GET'
+            };
+
+            var options = {
+                base: {
+                    regexString: 123
+                }
+            };
+
+            var fn = function () {
+                lib.parse(req, options);
+            };
+
+            expect(fn).to.throw(Error);
+        });
+
         it('should throw an error if protocol is not specified', function () {
             var req =  {
                 method: 'GET',
@@ -772,6 +871,36 @@ describe('parser', function () {
                 expect(err).to.exist;
                 expect(err.message).to.equal('request protocol not valid');
             }
+        });
+
+        it('should throw an error if options regex does not match request URL', function () {
+            var url = 'foo';
+
+            var reqForOrg = function (org) {
+
+                var urlWithOrg = '/vault/v1/' + org + '/fhir/Foo/123';
+
+                return {
+                    method: 'GET',
+                    protocol: 'https',
+                    originalUrl: urlWithOrg,
+                    headers: {host: 'fubar.com'}
+                };
+            };
+
+            options.base = {
+                regexString: '^https://fubar.com/vault/v1/\\w\\d{5}/fhir'
+            };
+
+            try {
+                var result = lib.parse(reqForOrg('12345A'), options);
+                throw new Error('error not thrown');
+            }
+            catch(err) {
+                expect(err).to.exist;
+                expect(err.message).to.equal('request source does not match options');
+            }
+
         });
 
         it('should support proxied request headers', function () {

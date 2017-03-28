@@ -12,7 +12,7 @@ describe('lib', function () {
                 req: {
                     method: method,
                     protocol: 'https',
-                    url: '/fhir/' + url,
+                    originalUrl: '/fhir/' + url,
                     headers: reqHeaders
                 },
                 token: {
@@ -20,7 +20,7 @@ describe('lib', function () {
                     fhir_act: fhir_act
                 },
                 returns: function (expected) {
-                    var description = tc.req.method + ' ' + tc.req.url + ' -> ' + expected;
+                    var description = tc.req.method + ' ' + tc.req.originalUrl + ' -> ' + expected;
                     it(description, function () {
                         try {
                             var params = lib.parser.parse(tc.req, options);
@@ -146,9 +146,9 @@ describe('lib', function () {
         url = 'Foo?identifier=bar%7C1234';
 
         var header = {
-            host: 'fhir.demo.net/svc',
+            host: 'fhir.demo.net',
             'x-forwarded-proto': 'http',
-            'url': url
+            'x-forwarded-uri': '/svc/fhir/' + url
         };
         
         var options = {

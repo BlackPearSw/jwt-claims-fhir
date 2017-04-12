@@ -50,7 +50,7 @@ describe('parser', function () {
         });
 
         it('should parse instance/read', function () {
-            var url = 'Foo/123';
+            var url = 'Foo/123-a';
             var method = 'GET';
 
             var result = lib.parse(req(url, method), options);
@@ -59,19 +59,19 @@ describe('parser', function () {
             result.should.deep.equal({
                 scope: {
                     cmp: 'Foo',
-                    id: '123'
+                    id: '123-a'
                 },
                 action: {
                     base: options.base,
                     op: 'read',
                     type: 'Foo',
-                    id: '123'
+                    id: '123-a'
                 }
             });
         });
 
         it('should parse instance/vread', function () {
-            var url = 'Foo/123/_history/1';
+            var url = 'Foo/123-a/_history/1';
             var method = 'GET';
 
             var result = lib.parse(req(url, method), options);
@@ -80,20 +80,20 @@ describe('parser', function () {
             result.should.deep.equal({
                 scope: {
                     cmp: 'Foo',
-                    id: '123'
+                    id: '123-a'
                 },
                 action: {
                     base: options.base,
                     op: 'vread',
                     type: 'Foo',
-                    id: '123',
+                    id: '123-a',
                     vid: '1'
                 }
             });
         });
 
         it('should parse instance/update', function () {
-            var url = 'Foo/123';
+            var url = 'Foo/123-a';
             var method = 'PUT';
 
             var result = lib.parse(req(url, method), options);
@@ -102,19 +102,19 @@ describe('parser', function () {
             result.should.deep.equal({
                 scope: {
                     cmp: 'Foo',
-                    id: '123'
+                    id: '123-a'
                 },
                 action: {
                     base: options.base,
                     op: 'update',
                     type: 'Foo',
-                    id: '123'
+                    id: '123-a'
                 }
             });
         });
 
         it('should parse type/conditional-update', function () {
-            var url = 'Foo?bar=123';
+            var url = 'Foo?bar=123-a';
             var method = 'PUT';
 
             var result = lib.parse(req(url, method), options);
@@ -127,14 +127,14 @@ describe('parser', function () {
                     op: 'update',
                     type: 'Foo',
                     parameters: {
-                        bar: '123'
+                        bar: '123-a'
                     }
                 }
             });
         });
 
         it('should parse instance/delete', function () {
-            var url = 'Foo/123';
+            var url = 'Foo/123-a';
             var method = 'DELETE';
 
             var result = lib.parse(req(url, method), options);
@@ -143,19 +143,19 @@ describe('parser', function () {
             result.should.deep.equal({
                 scope: {
                     cmp: 'Foo',
-                    id: '123'
+                    id: '123-a'
                 },
                 action: {
                     base: options.base,
                     op: 'delete',
                     type: 'Foo',
-                    id: '123'
+                    id: '123-a'
                 }
             });
         });
 
         it('should parse type/conditional-delete', function () {
-            var url = 'Foo?bar=123';
+            var url = 'Foo?bar=123-a';
             var method = 'DELETE';
 
             var result = lib.parse(req(url, method), options);
@@ -168,7 +168,7 @@ describe('parser', function () {
                     op: 'delete',
                     type: 'Foo',
                     parameters: {
-                        bar: '123'
+                        bar: '123-a'
                     }
                 }
             });
@@ -367,7 +367,7 @@ describe('parser', function () {
         });
 
         it('should parse instance/history', function () {
-            var url = 'Foo/123/_history';
+            var url = 'Foo/123-a/_history';
             var method = 'GET';
 
             var result = lib.parse(req(url, method), options);
@@ -376,13 +376,13 @@ describe('parser', function () {
             result.should.deep.equal({
                 scope: {
                     cmp: 'Foo',
-                    id: '123'
+                    id: '123-a'
                 },
                 action: {
                     base: options.base,
                     op: 'history',
                     type: 'Foo',
-                    id: '123'
+                    id: '123-a'
                 }
             });
         });
@@ -422,7 +422,7 @@ describe('parser', function () {
         });
 
         it('should parse instance/$operation using POST', function () {
-            var url = 'Foo/123/$bar';
+            var url = 'Foo/123-a/$bar';
             var method = 'POST';
 
             var result = lib.parse(req(url, method), options);
@@ -431,19 +431,19 @@ describe('parser', function () {
             result.should.deep.equal({
                 scope: {
                     cmp: 'Foo',
-                    id: '123'
+                    id: '123-a'
                 },
                 action: {
                     base: options.base,
                     op: '$bar',
                     type: 'Foo',
-                    id: '123'
+                    id: '123-a'
                 }
             });
         });
 
         it('should parse instance/$operation using GET', function () {
-            var url = 'Foo/123/$bar';
+            var url = 'Foo/123-a/$bar';
             var method = 'GET';
 
             var result = lib.parse(req(url, method), options);
@@ -452,13 +452,13 @@ describe('parser', function () {
             result.should.deep.equal({
                 scope: {
                     cmp: 'Foo',
-                    id: '123'
+                    id: '123-a'
                 },
                 action: {
                     base: options.base,
                     op: '$bar',
                     type: 'Foo',
-                    id: '123'
+                    id: '123-a'
                 }
             });
         });
@@ -532,7 +532,7 @@ describe('parser', function () {
         });
 
         it('should parse compartment/search using GET', function () {
-            var url = 'Foo/123/Bar?foo=bar';
+            var url = 'Foo/123-a/Bar?foo=bar';
             var method = 'GET';
 
             var result = lib.parse(req(url, method), options);
@@ -541,7 +541,7 @@ describe('parser', function () {
             result.should.deep.equal({
                 scope: {
                     cmp: 'Foo',
-                    id: '123'
+                    id: '123-a'
                 },
                 action: {
                     base: options.base,
@@ -555,7 +555,7 @@ describe('parser', function () {
         });
 
         it('should parse compartment/read using GET', function () {
-            var url = 'Foo/123/Bar/456';
+            var url = 'Foo/123-a/Bar/456';
             var method = 'GET';
 
             var result = lib.parse(req(url, method), options);
@@ -564,7 +564,7 @@ describe('parser', function () {
             result.should.deep.equal({
                 scope: {
                     cmp: 'Foo',
-                    id: '123'
+                    id: '123-a'
                 },
                 action: {
                     base: options.base,
@@ -576,7 +576,7 @@ describe('parser', function () {
         });
 
         it('should parse compartment/transaction', function () {
-            var url = 'Foo/123';
+            var url = 'Foo/123-a';
             var method = 'POST';
 
             var result = lib.parse(req(url, method), options);
@@ -585,7 +585,7 @@ describe('parser', function () {
             result.should.deep.equal({
                 scope: {
                     cmp: 'Foo',
-                    id: '123'
+                    id: '123-a'
                 },
                 action: {
                     base: options.base,
@@ -600,7 +600,7 @@ describe('parser', function () {
 
             var reqForOrg = function(org) {
 
-                var urlWithOrg = '/vault/v1/' + org + '/fhir/Foo/123';
+                var urlWithOrg = '/vault/v1/' + org + '/fhir/Foo/123-a';
 
                 return {
                     method: 'GET',
@@ -621,13 +621,13 @@ describe('parser', function () {
             result_Z99999.should.deep.equal({
                 scope: {
                     cmp: 'Foo',
-                    id: '123'
+                    id: '123-a'
                 },
                 action: {
                     base: 'https://fubar.com/vault/v1/Z99999/fhir',
                     op: 'read',
                     type: 'Foo',
-                    id: '123'
+                    id: '123-a'
                 }
             });
 
@@ -635,13 +635,13 @@ describe('parser', function () {
             result_A12345.should.deep.equal({
                 scope: {
                     cmp: 'Foo',
-                    id: '123'
+                    id: '123-a'
                 },
                 action: {
                     base: 'https://fubar.com/vault/v1/A12345/fhir',
                     op: 'read',
                     type: 'Foo',
-                    id: '123'
+                    id: '123-a'
                 }
             });
         });
@@ -678,7 +678,7 @@ describe('parser', function () {
         });
 
         it('should parse instance/_tags using POST', function () {
-            var url = 'Foo/123/_tags';
+            var url = 'Foo/123-a/_tags';
             var method = 'POST';
 
             var result = lib.parse(req(url, method), options);
@@ -687,19 +687,19 @@ describe('parser', function () {
             result.should.deep.equal({
                 scope: {
                     cmp: 'Foo',
-                    id: '123'
+                    id: '123-a'
                 },
                 action: {
                     base: options.base,
                     op: '_tags',
                     type: 'Foo',
-                    id: '123'
+                    id: '123-a'
                 }
             });
         });
 
         it('should parse instance/_tags/_delete using POST', function () {
-            var url = 'Foo/123/_tags/_delete';
+            var url = 'Foo/123-a/_tags/_delete';
             var method = 'POST';
 
             var result = lib.parse(req(url, method), options);
@@ -708,13 +708,13 @@ describe('parser', function () {
             result.should.deep.equal({
                 scope: {
                     cmp: 'Foo',
-                    id: '123'
+                    id: '123-a'
                 },
                 action: {
                     base: options.base,
                     op: '_tags/_delete',
                     type: 'Foo',
-                    id: '123'
+                    id: '123-a'
                 }
             });
         });
@@ -751,7 +751,7 @@ describe('parser', function () {
 
         it('should throw an error if req.method undefined', function () {
             var req = {
-                originalUrl: '123'
+                originalUrl: '123-a'
             };
 
             var fn = function () {
@@ -763,7 +763,7 @@ describe('parser', function () {
 
         it('should throw an error if req.method is not a string', function () {
             var req = {
-                originalUrl: '123',
+                originalUrl: '123-a',
                 method: 123
             };
 
@@ -776,7 +776,7 @@ describe('parser', function () {
 
         it('should throw an error if options undefined', function () {
             var req = {
-                originalUrl: '123',
+                originalUrl: '123-a',
                 method: 'GET'
             };
 
@@ -789,7 +789,7 @@ describe('parser', function () {
 
         it('should throw an error if options.base undefined', function () {
             var req = {
-                originalUrl: '123',
+                originalUrl: '123-a',
                 method: 'GET'
             };
 
@@ -804,7 +804,7 @@ describe('parser', function () {
 
         it('should throw an error if options.base is not a string', function () {
             var req = {
-                originalUrl: '123',
+                originalUrl: '123-a',
                 method: 'GET'
             };
 
@@ -821,7 +821,7 @@ describe('parser', function () {
 
         it('should throw an error if options.base.regexString defined but is not a string', function () {
             var req = {
-                originalUrl: '123',
+                originalUrl: '123-a',
                 method: 'GET'
             };
 
@@ -878,7 +878,7 @@ describe('parser', function () {
 
             var reqForOrg = function (org) {
 
-                var urlWithOrg = '/vault/v1/' + org + '/fhir/Foo/123';
+                var urlWithOrg = '/vault/v1/' + org + '/fhir/Foo/123-a';
 
                 return {
                     method: 'GET',

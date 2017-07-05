@@ -85,11 +85,15 @@ describe('lib', function () {
         authorise('Foo/123/Bar/9999', 'GET', 'Foo/123', 'read:Bar').returns(true);
         authorise('Foo/678/Bar/9999', 'GET', 'Foo/456', 'read:Bar').returns(false);
         authorise('Foo/123/Bar/9999', 'GET', 'Foo/123', 'read:Foo').returns(false);
+        authorise('Foo/678/Bar/456', 'GET', ['Foo/678', 'Foo/123'], 'read:Bar').returns(true);
+        authorise('Foo/678/Bar/456', 'GET', ['Foo/123', 'Foo/678'], 'read:Bar').returns(true);
+        authorise('Foo/678/Bar/456', 'GET', ['Foo/123', '*'], 'read:Bar').returns(true);
 
         authorise('Foo/123', 'POST', '*', '*:*').returns(true);
         authorise('Foo/123', 'POST', 'Foo/123', 'transaction:^').returns(true);
         authorise('Foo/678', 'POST', 'Foo/456', 'transaction:^').returns(false);
         authorise('Foo/123', 'POST', 'Foo/123', 'transaction:Foo').returns(false);
+
 
         authorise('_search?bar=123', 'POST', '*', 'search:^').returns(true);
 

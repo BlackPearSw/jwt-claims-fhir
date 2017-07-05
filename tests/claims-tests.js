@@ -42,6 +42,7 @@ describe('claims', function () {
         describe('access', function () {
             var root_scope;
             var cmp_scope;
+            var scopes;
             var claims;
 
             beforeEach(function () {
@@ -51,6 +52,8 @@ describe('claims', function () {
                     cmp: 'Foo',
                     id: '12345'
                 };
+
+                scopes = [cmp_scope, root_scope];
 
                 claims = [
                     'Foo/12345',
@@ -187,6 +190,80 @@ describe('claims', function () {
                     claim.id = '*';
 
                     var result = lib.authorise().access(cmp_scope, claims[0]);
+
+                    should.exist(result);
+                    result.isAuthorised.should.equal(true);
+                });
+            });
+
+            describe('when array of compartment scopes', function () {
+                it('should authorise access when wildcard claim', function () {
+                    var claim = ['*'];
+
+                    var result = lib.authorise().access(cmp_scope, claim);
+
+                    should.exist(result);
+                    result.isAuthorised.should.equal(true);
+                });
+
+                it('should authorise access when compartment claim', function () {
+                    var claim = ['Foo/12345'];
+
+                    var result = lib.authorise().access(cmp_scope, claim);
+
+                    should.exist(result);
+                    result.isAuthorised.should.equal(true);
+                });
+
+                it('should not authorise access when invalid compartment claim', function () {
+                    var claim = ['Foo/54321'];
+
+                    var result = lib.authorise().access(cmp_scope, claim);
+
+                    should.exist(result);
+                    result.isAuthorised.should.equal(false);
+                });
+
+                it('should authorise access when array includes wildcard', function () {
+                    var claim = ['Foo/54321', '*'];
+
+                    var result = lib.authorise().access(cmp_scope, claim);
+
+                    should.exist(result);
+                    result.isAuthorised.should.equal(true);
+                });
+
+                it('should authorise access when multiple compartment claims', function () {
+                    var claim = ['Foo/12345', 'Foo/54321'];
+
+                    var result = lib.authorise().access(cmp_scope, claim);
+
+                    should.exist(result);
+                    result.isAuthorised.should.equal(true);
+                });
+
+                it('should authorise access when multiple compartment claims', function () {
+                    var claim = ['Foo/54321', 'Foo/12345'];
+
+                    var result = lib.authorise().access(cmp_scope, claim);
+
+                    should.exist(result);
+                    result.isAuthorised.should.equal(true);
+                });
+
+                it('should authorise access when multiple compartment claims', function () {
+                    var claim = ['Foo/12345', 'Foo/54321'];
+
+                    var result = lib.authorise().access(cmp_scope, claim);
+
+                    should.exist(result);
+                    result.isAuthorised.should.equal(true);
+                });
+
+                it('should authorise access when multiple compartment claims', function () {
+                    var claim = ['Foo/54321', 'Foo/12345'];
+
+                    var result = lib.authorise().access(cmp_scope, claim);
 
                     should.exist(result);
                     result.isAuthorised.should.equal(true);

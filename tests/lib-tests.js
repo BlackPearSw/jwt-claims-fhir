@@ -4,7 +4,6 @@ var should = require('chai').should();
 
 describe('lib', function () {
 
-
     function buildAuthorisation(reqHeaders, options) {
 
         return function(url, method, fhir_scp, fhir_act) {
@@ -164,7 +163,7 @@ describe('lib', function () {
         authorise(url, 'GET', '*', ['read:*','search:*']).returns(true);
     });
 
-    describe('requests using spoofed headers are rejected', function () {
+    describe('should reject requests using spoofed headers', function () {
 
         // This test assumes a GET request to http://fhir.demo.net/svc/fhir/Bar?a=11&/Foo/678?a=1
         // It is attempting to gain authorisation to search the Bar resource by spoofing the path and

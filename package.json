@@ -16,5 +16,8 @@
   },
   "scripts": {
     "test": "mocha --recursive ./tests"
+  },
+  "dependencies": {
+    "lodash": "^4.17.4"
   }
 }

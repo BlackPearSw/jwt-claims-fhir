@@ -39,9 +39,23 @@ Determine action from a request with url and method
 
     console.log(action);
 
+### convert
+Convert claims to [SMART on FHIR scopes](http://docs.smarthealthit.org/authorization/scopes-and-launch-context/)
+
+    var options = {
+        read: ['$foo'],
+        write: ['$bar'],
+        '*': ['$anything']
+    };
+
+    var smart_scopes = lib.convert(options).toSMARTonFHIRscopes(claims);
+
+    console.log(smart_scopes);
+
+
 ## Notices
 
-Copyright (c) 2016 Black Pear Software
+Copyright (c) 2016+ Black Pear Software
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 

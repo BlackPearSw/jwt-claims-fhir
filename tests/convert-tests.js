@@ -4,15 +4,6 @@ var should = require('chai').should();
 
 describe('convert', function () {
     describe('toSMARTonFHIRscopes', function () {
-        var claims;
-
-        beforeEach(function () {
-            claims = [
-                '*:Foo',
-                'read:Bar'
-            ];
-        });
-
         it('should exist', function () {
             should.exist(lib.convert().toSMARTonFHIRscopes);
         });
@@ -27,93 +18,179 @@ describe('convert', function () {
                 .should.be.deep.equal([]);
         });
 
-        it('should convert wildcard op', function () {
+        it('should return empty array if a fhir_scp is defined', function () {
+            var claims = {
+                fhir_scp: 'Foo/123',
+                fhir_act: '*:*'
+            };
+
             lib.convert()
-                .toSMARTonFHIRscopes('*:Foo')
+                .toSMARTonFHIRscopes(claims)
+                .should.be.deep.equal([]);
+        });
+
+        it('should convert wildcard op', function () {
+            var claims = {
+                fhir_scp: '*',
+                fhir_act: '*:Foo'
+            };
+
+            lib.convert()
+                .toSMARTonFHIRscopes(claims)
                 .should.be.deep.equal(['user/Foo.*']);
         });
 
         it('should convert wildcard type', function () {
+            var claims = {
+                fhir_scp: '*',
+                fhir_act: 'read:*'
+            };
+
             lib.convert()
-                .toSMARTonFHIRscopes('read:*')
+                .toSMARTonFHIRscopes(claims)
                 .should.be.deep.equal(['user/*.read']);
         });
 
         it('should convert wildcard op AND type', function () {
+            var claims = {
+                fhir_scp: '*',
+                fhir_act: '*:*'
+            };
+
             lib.convert()
-                .toSMARTonFHIRscopes('*:*')
+                .toSMARTonFHIRscopes(claims)
                 .should.be.deep.equal(['user/*.*']);
         });
 
         it('should convert defined claim', function () {
+            var claims = {
+                fhir_scp: '*',
+                fhir_act: 'read:Foo'
+            };
+
             lib.convert()
-                .toSMARTonFHIRscopes('read:Foo')
+                .toSMARTonFHIRscopes(claims)
                 .should.be.deep.equal(['user/Foo.read']);
         });
 
         it('should convert array of claims', function () {
+            var claims = {
+                fhir_scp: '*',
+                fhir_act: ['read:Foo', 'update:Foo', 'read:Bar']
+            };
+
             lib.convert()
-                .toSMARTonFHIRscopes(['read:Foo', 'update:Foo', 'read:Bar'])
+                .toSMARTonFHIRscopes(claims)
                 .should.be.deep.equal(['user/Foo.read', 'user/Foo.write', 'user/Bar.read']);
         });
 
         it('should convert read op to read permission', function () {
+            var claims = {
+                fhir_scp: '*',
+                fhir_act: 'read:Foo'
+            };
+
             lib.convert()
-                .toSMARTonFHIRscopes('read:Foo')
+                .toSMARTonFHIRscopes(claims)
                 .should.be.deep.equal(['user/Foo.read']);
         });
 
         it('should convert vread op to read permission', function () {
+            var claims = {
+                fhir_scp: '*',
+                fhir_act: 'vread:Foo'
+            };
+
             lib.convert()
-                .toSMARTonFHIRscopes('vread:Foo')
+                .toSMARTonFHIRscopes(claims)
                 .should.be.deep.equal(['user/Foo.read']);
         });
 
         it('should convert update op to write permission', function () {
+            var claims = {
+                fhir_scp: '*',
+                fhir_act: 'update:Foo'
+            };
+
             lib.convert()
-                .toSMARTonFHIRscopes('update:Foo')
+                .toSMARTonFHIRscopes(claims)
                 .should.be.deep.equal(['user/Foo.write']);
         });
 
         it('should convert delete op to write permission', function () {
+            var claims = {
+                fhir_scp: '*',
+                fhir_act: 'delete:Foo'
+            };
+
             lib.convert()
-                .toSMARTonFHIRscopes('delete:Foo')
+                .toSMARTonFHIRscopes(claims)
                 .should.be.deep.equal(['user/Foo.write']);
         });
 
         it('should convert history op to read permission', function () {
+            var claims = {
+                fhir_scp: '*',
+                fhir_act: 'history:Foo'
+            };
+
             lib.convert()
-                .toSMARTonFHIRscopes('history:Foo')
+                .toSMARTonFHIRscopes(claims)
                 .should.be.deep.equal(['user/Foo.read']);
         });
 
         it('should convert create op to write permission', function () {
+            var claims = {
+                fhir_scp: '*',
+                fhir_act: 'create:Foo'
+            };
+
             lib.convert()
-                .toSMARTonFHIRscopes('create:Foo')
+                .toSMARTonFHIRscopes(claims)
                 .should.be.deep.equal(['user/Foo.write']);
         });
 
         it('should convert search op to read permission', function () {
+            var claims = {
+                fhir_scp: '*',
+                fhir_act: 'search:Foo'
+            };
+
             lib.convert()
-                .toSMARTonFHIRscopes('search:Foo')
+                .toSMARTonFHIRscopes(claims)
                 .should.be.deep.equal(['user/Foo.read']);
         });
 
         it('should ignore conformance op', function () {
+            var claims = {
+                fhir_scp: '*',
+                fhir_act: 'conformance:^'
+            };
+
             lib.convert()
-                .toSMARTonFHIRscopes('conformance:^')
+                .toSMARTonFHIRscopes(claims)
                 .should.be.deep.equal([]);
         });
 
         it('should ignore transaction op', function () {
+            var claims = {
+                fhir_scp: '*',
+                fhir_act: 'transaction:^'
+            };
+
             lib.convert()
-                .toSMARTonFHIRscopes('transaction:^')
+                .toSMARTonFHIRscopes(claims)
                 .should.be.deep.equal([]);
         });
 
         it('should ignore unknown op', function () {
+            var claims = {
+                fhir_scp: '*',
+                fhir_act: '$bar:Foo'
+            };
+
             lib.convert()
-                .toSMARTonFHIRscopes('$bar:Foo')
+                .toSMARTonFHIRscopes(claims)
                 .should.be.deep.equal([]);
         });
 
@@ -124,14 +201,24 @@ describe('convert', function () {
                 '*': ['$root']
             };
 
+            var claims = {
+                fhir_scp: '*',
+                fhir_act: ['$bar:Foo', '$rab:Foo', '$root:Bar']
+            };
+
             lib.convert(options)
-                .toSMARTonFHIRscopes(['$bar:Foo', '$rab:Foo', '$root:Bar'])
+                .toSMARTonFHIRscopes(claims)
                 .should.be.deep.equal(['user/Foo.read', 'user/Foo.write', 'user/Bar.*']);
         });
 
-        it('should convert dedupe duplicate permissions', function () {
+        it('should dedupe duplicate permissions', function () {
+            var claims = {
+                fhir_scp: '*',
+                fhir_act: ['read:Foo', 'vread:Foo']
+            };
+
             lib.convert()
-                .toSMARTonFHIRscopes(['read:Foo', 'vread:Foo'])
+                .toSMARTonFHIRscopes(claims)
                 .should.be.deep.equal(['user/Foo.read']);
         });
     });

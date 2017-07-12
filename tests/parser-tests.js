@@ -463,6 +463,29 @@ describe('parser', function () {
             });
         });
 
+        it('should parse instance/$operation using GET [regression BPS.PT#146765319]', function () {
+            var url = 'Slot/5821ee6d9e04a3df0812b335/$reserve';
+            var method = 'GET';
+
+            var result = lib.parse(req(url, method), options);
+
+            should.exist(result);
+            result.should.deep.equal({
+                scope: {
+                    cmp: 'Slot',
+                    id: '5821ee6d9e04a3df0812b335'
+                },
+                action: {
+                    base: options.base,
+                    op: '$reserve',
+                    type: 'Slot',
+                    id: '5821ee6d9e04a3df0812b335'
+                }
+            });
+        });
+
+
+
         it('should parse type/$operation using POST', function () {
             var url = 'Foo/$bar';
             var method = 'POST';

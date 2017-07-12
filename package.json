@@ -1,6 +1,6 @@
 {
   "name": "jwt-claims-fhir",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "JWT claims for fhir server authorisation",
   "publishConfig": {
     "registry": "https://npm.blackpear.com"
@@ -16,5 +16,8 @@
   },
   "scripts": {
     "test": "mocha --recursive ./tests"
+  },
+  "dependencies": {
+    "lodash": "^4.17.4"
   }
 }

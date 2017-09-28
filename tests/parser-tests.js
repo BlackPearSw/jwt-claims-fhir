@@ -634,7 +634,7 @@ describe('parser', function () {
             };
 
             options.base = {
-                regexString: '^https://fubar.com/vault/v1/\\w\\d{5}/fhir'
+                regexString: '^https://fubar.(?:thirdparty.nhs.uk|com)/vault/v1/\\w\\d{5}/fhir'
             };
 
             var result_Z99999 = lib.parse(reqForOrg('Z99999'), options);
@@ -674,7 +674,7 @@ describe('parser', function () {
 
             var reqForOrg = function(org) {
 
-                var urlWithOrg = '/vault/v1/' + org + '/fhir/';
+                var urlWithOrg = '/vault/v1/' + org + '/fhir';
 
                 return {
                     method: 'GET',

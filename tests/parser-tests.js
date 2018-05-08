@@ -600,7 +600,7 @@ describe('parser', function () {
             });
         });
 
-        it.only('should parse compartment/search using GET when parameter includes DSTU1 operators (>=)', function () {
+        it('should parse compartment/search using GET when parameter includes DSTU1 operators (>=)', function () {
             var url = 'Foo/123-a/Bar?foo=>=bar';
             var method = 'GET';
 

@@ -131,7 +131,7 @@ An operation (standard or implementor-defined)
 
 For example:
 
-    '$do/^'
+    '$do:^'
 
 ##### Shorthand
 

@@ -1,10 +1,7 @@
 {
-  "name": "jwt-claims-fhir",
-  "version": "0.0.14",
+  "name": "@blackpear/jwt-claims-fhir",
+  "version": "0.0.15",
   "description": "JWT claims for fhir server authorisation",
-  "publishConfig": {
-    "registry": "https://npm.blackpear.com"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/BlackPearSw/jwt-claims-fhir.git"

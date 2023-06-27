@@ -49,6 +49,24 @@ describe('parser', function () {
             });
         });
 
+        it('should tolerate _ char in id', function () {
+            var url = 'the/quick/brown/fox/jumped/over/the/lazy/dog';
+            var method = 'GET';
+
+            var result = lib.parse(req(url, method), options);
+
+            should.exist(result);
+            result.should.deep.equal({
+                scope: {
+                    cmp: 'the',
+                    id: 'quick'
+                },
+                action: {
+                    base: options.base
+                }
+            });
+        });
+
         it('should parse instance/read', function () {
             var url = 'Foo/123-a';
             var method = 'GET';

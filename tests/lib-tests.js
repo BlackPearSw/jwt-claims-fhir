@@ -53,6 +53,13 @@ describe('lib', function () {
 
         var authorise = buildAuthorisation(header, options);
 
+        //test case for R4compatibility required for Core Authorizer
+        authorise('metadata', 'GET', '*', 'capabilities:^').returns(true);
+
+        // test case for #176631853
+        authorise('Organization/H81109/Patient/500211', 'POST', '*', 'transaction:^').returns(true);
+        authorise('Binary/61dfefbc740e6a04eaca8eb6', 'GET', '*', 'search,read,vread,_tags:Binary').returns(true);
+
         //Wellformed requests
         authorise('Foo/123', 'GET', '*', 'read:Foo').returns(true);
         authorise('Foo/123', 'GET', '*', 'read:*').returns(true);
@@ -101,7 +108,6 @@ describe('lib', function () {
 
         authorise('', 'POST', '*', 'transaction:^').returns(true);
 
-
         authorise('Foo/123/_history', 'GET', '*', 'history:Foo').returns(true);
         authorise('Foo/_history', 'GET', '*', 'history:Foo').returns(true);
         authorise('_history', 'GET', '*', 'history:^').returns(true);
@@ -127,6 +133,11 @@ describe('lib', function () {
         authorise('Foo/123456/_tags', 'POST', '*', '_tags:Foo').returns(true);
         authorise('Foo/123456/_tags/_delete', 'POST', '*', '*:*').returns(true);
         authorise('Foo/123456/_tags/_delete', 'POST', '*', '_tags/_delete:Foo').returns(true);
+
+        // test case for composite definition
+        authorise('Foo/123456/_history/0', 'GET', '*', 'search,read,vread,_tags:Foo').returns(true);
+
+
     });
 
     describe('should reject request if options are malformed', function () {

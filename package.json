@@ -1,6 +1,6 @@
 {
   "name": "@blackpear/jwt-claims-fhir",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "description": "JWT claims for fhir server authorisation",
   "repository": {
     "type": "git",

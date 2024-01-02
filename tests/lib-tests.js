@@ -53,8 +53,13 @@ describe('lib', function () {
 
         var authorise = buildAuthorisation(header, options);
 
+        authorise('QuestionnaireResponse/f297c7e7-4ae5-40a8-8cfb-466b752d2e36/_history/a2f5c2e6-aa75-4643-b5a6-a0f893e14a75', 'GET', '*', 'read,vread:QuestionnaireResponse').returns(true);
+
         //test case for R4compatibility required for Core Authorizer
         authorise('metadata', 'GET', '*', 'capabilities:^').returns(true);
+
+        //test case for guid in vid
+        authorise('QuestionnaireResponse/f297c7e7-4ae5-40a8-8cfb-466b752d2e36/_history/a2f5c2e6-aa75-4643-b5a6-a0f893e14a75', 'GET', '*', 'read,vread:QuestionnaireResponse').returns(true);
 
         // test case for #176631853
         authorise('Organization/H81109/Patient/500211', 'POST', '*', 'transaction:^').returns(true);
@@ -136,6 +141,8 @@ describe('lib', function () {
 
         // test case for composite definition
         authorise('Foo/123456/_history/0', 'GET', '*', 'search,read,vread,_tags:Foo').returns(true);
+        authorise('QuestionnaireResponse/f297c7e7-4ae5-40a8-8cfb-466b752d2e36/_history/a2f5c2e6-aa75-4643-b5a6-a0f893e14a75', 'GET', '*', 'read,vread:QuestionnaireResponse').returns(true);
+
 
 
     });
